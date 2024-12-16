@@ -1,0 +1,4 @@
+Az login
+terrafrom init
+terraform plan
+terrafrom apply
