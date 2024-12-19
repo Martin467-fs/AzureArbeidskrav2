@@ -6,7 +6,6 @@ Terraform-prosjekt som oppretter en VM med webtjeneste og 2 VM med database i la
 
 - **`main.tf`**: Hovedkonfigurasjonsfilen
 - **`variables.tf`**: Definerer variabler
-- **`variables.tfvars`**: Variabler ment til å endres av bruker
 
 ## Instruksjoner for oppsett
 
@@ -20,38 +19,34 @@ Terraform-prosjekt som oppretter en VM med webtjeneste og 2 VM med database i la
 
 1. **NEDLASTNING**:
 - Last ned prosjektet som zip og pakk ut.
-2. **ENDRINGER**
-- Gjør nødvendige endringer i **`variables.tfvars`**
-- Endringer som må gjøres manuelt:
-  - Linje 6 og 7 i **`modules/db-install/scripts/install_mariadb.sh`** må ha lik verdi som `admin_username` og `admin_password` i **`terraform.tfvars`**
-  - Linje 64 og 65 i **`modules/db-install/scripts/playbook.yml`** må ha lik verdi som `admin_username` og `admin_password` i **`terraform.tfvars`**
-3. **KJØRE TERRAFORM VIA POWERSHELL**
+2. **KJØRE TERRAFORM VIA POWERSHELL**
 - Det kan hende at man ikke klarer å logge inn med `az login`, men da følger man instruksjonene som dukker opp i Powershell.
   ```powershell
   cd <stien til Terraform-mappen>
-  az login
+  az login (Når du har sukksesfult logget inn med az login vill din Subscription ID bli vist i kommano feltet ditt, denne IDen må du kopiereog legge inn i root main.tf filen. Øverst i den main.tf filen ligger det et felt for subscription_id der må du lime inn din ID.
   terraform init
   terraform plan
   terraform apply
   ```
 - Det kan hende at man får en feilmelding relatert til MariaDB installasjon, men da kan man slette ressursene i Azure og prøve å kjøre Terraform på nytt.
-4. **BENYTTE PROSJEKTET**
-- Skriv den offentlige IP-adressen som står i `oubl_ipadd = "<IP-adresse>"` som dukker opp på bunnen av cmd etter terraform apply er kjørt i en nettleser for å få vise nettsiden som har kontakt med databasen.
+3. **BENYTTE PROSJEKTET**
+- Skriv den offentlige IP-adressen som står i `publ_ipadd = "<IP-adresse>"` som dukker opp på bunnen av cmd etter terraform apply er kjørt i en nettleser for å få vise nettsiden som har kontakt med databasen.
   - Det kan hende at det tar litt tid før nettsiden som henter data fra databasen er ferdig satt opp.
 - Skriv `terraform output admin_password` for å vise passordet til adminbrukeren.
 - For å koble til webserveren via SSH:
   ```powershell
-  ssh <admin_username>@<offentlige IP-adressen>
-  <admin_username>@<offentlige IP-adressen> password: <admin_password>
+  ssh <admin_username>@<offentlige IP-adressen> -i .ssh/id_rsa 
   ```
 - For å koble til DB-serverne via SSH fra webserver:
-  ```powershell
-  ssh <admin_username>@<IP-adressen til VM>
-  <admin_username>@<IP-adressen til VM> password: <admin_password>
+  Du kan ssh inn til database serverne ved å laste opp den samme private keyen til webservern.
   ```
-5. **ELIMINERE RESSURSER ETTER OPPSETT**
-- Plan og apply destroy for prosjektet:
-  ```powershell
-  terraform plan -destroy -out main.destroy.tfplan
-  terraform apply main.destroy.tfplan
+  scp .ssh/id_rsa  <admin_username>@<offentlige ip adressen>:/home/<admin_username>/id_rsa
+  ssh <admin_username>@<offentlige IP-adressen> -i .ssh/id_rsa
+  ssh <db_username>@<privat ip adresse db server> -i id_rsa
+  ```
+  Privat IP adresse på DB server er 10.0.0.6 og 10.0.0.7
+4. **ELIMINERE RESSURSER ETTER OPPSETT**
+- Destroy for prosjektet:
+  ```powershell 
+  terraform destroy
   ```
