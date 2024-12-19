@@ -23,7 +23,10 @@ Terraform-prosjekt som oppretter en VM med webtjeneste og 2 VM med database i la
 - Det kan hende at man ikke klarer å logge inn med `az login`, men da følger man instruksjonene som dukker opp i Powershell.
   ```powershell
   cd <stien til Terraform-mappen>
-  az login (Når du har sukksesfult logget inn med az login vill din Subscription ID bli vist i kommano feltet ditt, denne IDen må du kopiereog legge inn i root main.tf filen. Øverst i den main.tf filen ligger det et felt for subscription_id der må du lime inn din ID.
+  az login (Når du har sukksesfult logget inn med az login vill din Subscription ID bli vist i kommano feltet ditt,
+  denne IDen må du kopiere og legge inn i root main.tf filen.
+  Øverst i den main.tf filen ligger det et felt for subscription_id der må du lime inn din ID.)
+  
   terraform init
   terraform plan
   terraform apply
